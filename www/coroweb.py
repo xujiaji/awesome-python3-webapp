@@ -86,7 +86,7 @@ def has_request_arg(fn):
         if found and (
                 param.kind != inspect.Parameter.VAR_POSITIONAL and param.kind != inspect.Parameter.KEYWORD_ONLY and param.kind != inspect.Parameter.VAR_KEYWORD):
             raise ValueError('request parameter must be the last named parameter in function: %s%s' % (fn.__name__, str(sig)))
-        return found
+    return found
 
 
 # 从URL函数中分析其需要接收的参数，从request中获取必要的参数调用URL函数，
@@ -103,7 +103,7 @@ class RequestHandler(object):
         self._required_kw_args = get_required_kw_args(fn)
 
     async def __call__(self, request):
-        dw = None
+        kw = None
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
                 if not request.content_type:
