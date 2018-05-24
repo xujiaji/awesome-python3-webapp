@@ -8,7 +8,7 @@ import asyncio
 async def test():
     await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='root', password='password123456', db='awesome')
 
-    u = User(name='Test', email='test@example.com', passwd='1234567890', image='about:blank')
+    u = User(name='Test2', email='test2@example.com', passwd='1234567890', image='about:blank2')
 
     await u.save()
 
