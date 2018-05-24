@@ -8,7 +8,7 @@ __author__ = 'Jiaji Xu'
 from aiohttp import web
 import re, time, hashlib, json, logging
 from coroweb import get, post
-from apis import APIError, APIValueError, APIResourceNotFoundError, APIPermissionError
+from apis import Page, APIError, APIValueError, APIResourceNotFoundError, APIPermissionError
 from models import User, Comment, Blog, next_id
 from config import configs
 import markdown2
@@ -98,7 +98,6 @@ def index(request):
     return {
         '__template__': 'blogs.html',
         'blogs': blogs
-        # '__user__': request.__user__
     }
 
 
@@ -136,6 +135,14 @@ def manage_create_blog():
         '__template__': 'manage_blog_edit.html',
         'id': '',
         'action': '/api/blogs'
+    }
+
+
+@get('/manage/blogs')
+def manage_blogs(*, page='1'):
+    return {
+        '__template__': 'manage_blogs.html',
+        'page_index': get_page_index(page)
     }
 
 
@@ -219,6 +226,17 @@ def signout(request):
 async def api_get_blog(*, id):
     blog = await Blog.find(id)
     return blog
+
+
+@get('/api/blogs')
+async def api_blogs(*, page='1'):
+    page_index = get_page_index(page)
+    num = await Blog.findNumber('count(id)')
+    p = Page(num, page_index)
+    if num == 0:
+        return dict(page=p, blogs=())
+    blogs = await Blog.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
+    return dict(page=p, blogs=blogs)
 
 
 @post('/api/blogs')

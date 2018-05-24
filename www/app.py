@@ -85,6 +85,7 @@ async def data_factory(app, handler):
 
 async def response_factory(app, handler):
     async def response(request):
+        logging.info('Response handler...')
         # 结果
         r = await handler(request)
         if isinstance(r, web.StreamResponse):
@@ -106,6 +107,7 @@ async def response_factory(app, handler):
                 resp.content_type = 'application/json;charset=utf-8'
                 return resp
             else:
+                r['__user__'] = request.__user__
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp
@@ -146,8 +148,8 @@ async def init(loop):
     add_routes(app, 'handlers')
     add_static(app)
     # app.router.add_route('GET', '/', index)
-    srv = await loop.create_server(app.make_handler(), '172.16.23.212', 9000)
-    logging.info('server started at http://172.16.23.212:9000 ...')
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    logging.info('server started at http://127.0.0.1:9000 ...')
     return srv
 
 
