@@ -141,7 +141,7 @@ class RequestHandler(object):
             for k, v in request.match_info.items():
                 if k in kw:
                     logging.warning('Duplicte arg name in named arg and kw args: %s' % k)
-                    kw[k] = v
+                kw[k] = v
 
         if self._has_request_arg:
             kw['request'] = request
