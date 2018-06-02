@@ -11,5 +11,6 @@ configs = {
     'db': {
         'host': '127.0.0.1',
         'password': '6Sb8qzM38'
+        # 'password': 'password123456'
     }
 }
