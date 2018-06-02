@@ -6,7 +6,7 @@ __author__ = 'Jiaji Xu'
 ' url handlers '
 
 from aiohttp import web
-import re, time, hashlib, json, logging
+import re, time, hashlib, json, logging, send_email
 from coroweb import get, post
 from apis import Page, APIError, APIValueError, APIResourceNotFoundError, APIPermissionError
 from models import User, Comment, Blog, next_id
@@ -213,6 +213,8 @@ async def api_create_comment(id, request, *, content):
     if not content or not content.strip():
         raise APIValueError('content')
     blog = await Blog.find(id)
+    blog_user = await User.find(blog.user_id)
+    send_email.send_comment_email(blog_user.email, content, '/blog/%s' % id)
     if blog is None:
         raise APIResourceNotFoundError('Blog')
     comment = Comment(blog_id=blog.id, user_id=user.id, user_name=user.name, user_image=user.image,
