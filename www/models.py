@@ -9,7 +9,7 @@ __author__ = 'Jiaji Xu'
 
 import time, uuid
 
-from orm import Model, StringField, BooleanField, FloatField, TextField
+from orm import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
 
 def next_id():
@@ -25,6 +25,8 @@ class User(Model):
     name = StringField(ddl='varchar(50)')
     image = StringField(ddl='varchar(500)')
     created_at = FloatField(default=time.time)
+    status = IntegerField() # 1：正常账号
+    confirm = StringField(ddl='varchar(50)')
 
 
 class Blog(Model):

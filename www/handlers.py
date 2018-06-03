@@ -152,6 +152,25 @@ async def api_comments(*, page='1'):
     return dict(page=p, comments=comments)
 
 
+@get('/email_confirm')
+async def confirm_email(*, token=None):
+    users = None
+    if token is not None:
+        users = await User.findAll('confirm=?', [token])
+    if users is not None and len(users) == 1 and users[0].confirm == token:
+        user = users[0]
+        user.status = 1
+        user.confirm = None
+        await user.update()
+        return {
+            '__template__': 'email_confirm.html',
+            '__user__': user
+        }
+    return {
+        '__template__': 'email_confirm.html'
+    }
+
+
 @get('/register')
 def register():
     return {
@@ -288,15 +307,18 @@ async def api_register_user(*, email, name, passwd):
         name=name.strip(),
         email=email,
         passwd=hashlib.sha1(sha1_passwd.encode('utf-8')).hexdigest(),
-        image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(email.encode('utf-8')).hexdigest())
+        image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(email.encode('utf-8')).hexdigest(),
+        confirm=hashlib.md5(sha1_passwd.encode('utf-8')).hexdigest())
     await user.save()
+    send_email.send_confirm_account(email, user.confirm)
     # make session cookie / 创建会话cookie
-    r = web.Response()
-    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
-    user.passwd = '******'
-    r.content_type = 'application/json'
-    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
-    return r
+    # r = web.Response()
+    # r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
+    # user.passwd = '******'
+    # r.content_type = 'application/json'
+    # r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    # return r
+    return {}
 
 
 @post('/api/authenticate')
@@ -309,6 +331,8 @@ async def authenticate(*, email, passwd):
     if len(users) == 0:
         raise APIValueError('email', '邮箱不存在！')
     user = users[0]
+    if user.status == 0:
+        raise APIError('登录失败', 'status', '该邮箱没有完成认证')
     # 检测密码
     sha1 = hashlib.sha1()
     sha1.update(user.id.encode('utf-8'))

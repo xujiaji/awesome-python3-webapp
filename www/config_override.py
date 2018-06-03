@@ -8,6 +8,7 @@ Override configurations.
 __author__ = 'Jiaji Xu'
 
 configs = {
+    'debug': False,
     'db': {
         'host': '127.0.0.1',
         'password': '6Sb8qzM38'

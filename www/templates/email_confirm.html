@@ -1,0 +1,16 @@
+{% extends '__base__.html' %}
+{% block title %}  邮箱注册确认！ {% endblock %}
+
+{% block content %}
+
+<div class="uk-width-2-3">
+    {% if __user__ %}
+    <h1>您已确认成功</h1>
+    {% else %}
+    <h1>您已成功注册，请前往邮箱确认哦！</h1>
+    {% endif %}
+    <a href="/">
+        <button type="button" class="uk-button uk-button-primary"><i class="uk-icon-home"></i> 返回首页</button>
+    </a>
+</div>
+{% endblock %}

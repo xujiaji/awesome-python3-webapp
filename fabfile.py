@@ -104,7 +104,8 @@ def rollback():
     with cd(_REMOTE_BASE_DIR):
         r = run('ls -p -1')
         files = [s[:-1] for s in RE_FILES.split(r) if s.startswith('www-') and s.endswith('/')]
-        files.sort(key=lambda s1, s2: 1 if s1 < s2 else -1)
+        print(files)
+        files.sort(reverse=True)
         r = run('ls -l www')
         ss = r.split(' -> ')
         if len(ss) != 2:

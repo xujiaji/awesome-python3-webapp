@@ -6,10 +6,11 @@ __author__ = 'Jiaji Xu'
 
 'send email'
 
-import smtplib
+import smtplib, markdown2
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
+import config_privacy
 
 
 def _format_address(s):
@@ -18,7 +19,7 @@ def _format_address(s):
 
 
 from_address = 'jiajixu@qq.com'
-password = 'hgvcqmblnnzlbbhj'
+password = config_privacy.email_password # 这里大家配置自己的密码
 # to_address = 'demofamilies@gmail.com'
 smtp_server = 'smtp.qq.com'
 
@@ -43,9 +44,11 @@ smtp_server = 'smtp.qq.com'
 
 
 def send_comment_email(email, comment, url):
-    msg = MIMEText('<html><body><h1>亲爱的会员您好！</h1>' +
-                   '<p>来自xujiaji Web网站一条消息：<a href="https://www.xujiaji.org">www.xujiaji.com%s</a></p>' % url +
-                   '<p>消息内容：<br>%s</p>' % comment +
+    msg = MIMEText('<html><body>'
+                   '<a href="https://www.xujiaji.com"><img src="https://www.xujiaji.com/static/img/xujiaji.png"></a>'
+                   '<h1>亲爱的会员您好！</h1>' +
+                   '<p>XuJiaji的网站有您一条新消息：<br>消息地址：<a href="https://www.xujiaji.com%s">https://www.xujiaji.com%s</a></p>' % (url, url) +
+                   '<p>消息内容：<br>%s</p>' % markdown2.markdown(comment) +
                    '</body></html>', 'html', 'utf-8')
 
     msg['From'] = _format_address("XuJiaji WEB <%s>" % from_address)
@@ -58,6 +61,25 @@ def send_comment_email(email, comment, url):
     server.login(from_address, password)
     server.sendmail(from_address, [email], msg.as_string())
 
+
+def send_confirm_account(email, token):
+    msg = MIMEText('<html><body>'
+                   '<a href="https://www.xujiaji.com"><img src="https://www.xujiaji.com/static/img/xujiaji.png"></a>'
+                   '<h1>亲爱的会员您好！</h1>' +
+                   '<p>欢迎您的注册！<br>如果是您本人注册请点击认证链接（如无法访问请拷贝到浏览器）：<br>'
+                   '<a href="https://www.xujiaji.com/email_confirm?token=%s">'
+                   'https://www.xujiaji.com/email_confirm?token=%s</a></p>' % (token, token) +
+                   '</body></html>', 'html', 'utf-8')
+
+    msg['From'] = _format_address("XuJiaji WEB <%s>" % from_address)
+    msg['To'] = _format_address("亲爱的会员 <%s>" % email)
+    msg['Subject'] = Header('来自xujiaji网站的消息...', 'utf-8').encode()
+
+    server = smtplib.SMTP_SSL()
+    server.connect(smtp_server, 465)
+    # server.set_debuglevel(1)
+    server.login(from_address, password)
+    server.sendmail(from_address, [email], msg.as_string())
 
 # class SendEmail(object):
 #

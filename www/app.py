@@ -18,7 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 from config import configs
 import orm
 from coroweb import add_routes, add_static
-from handlers import cookie2user, COOKIE_NAME
+from handlers import cookie2user, user2cookie, COOKIE_NAME
 
 # def index(request):
 #     return web.Response(body='<h1>Awesome</h1>')
@@ -105,6 +105,11 @@ async def response_factory(app, handler):
             if template is None:
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))
                 resp.content_type = 'application/json;charset=utf-8'
+                return resp
+            elif r.get('__user__'):
+                resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
+                resp.content_type = 'text/html;charset=utf-8'
+                resp.set_cookie(COOKIE_NAME, user2cookie(r.get('__user__'), 86400), max_age=86400, httponly=True)
                 return resp
             else:
                 r['__user__'] = request.__user__
