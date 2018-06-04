@@ -2,7 +2,7 @@
 {% block title %} {{blog.name}} {% endblock %}
 
 {% block beforehead%}
-<script>
+<script xmlns:border-top="http://www.w3.org/1999/xhtml" xmlns:border-top="http://www.w3.org/1999/xhtml">
     var comment_url = '/api/blogs/{{ blog.id }}/comments';
     $(function() {
         var $form = $('#form-comment');
@@ -66,8 +66,8 @@
         {% for comment in comments %}
         <li>
             <article class="uk-comment">
-                <header class="uk-comment-header">
-                    <img class="uk-comment-avatar uk-border-circle" width="50" height="50"
+                <header style="border-left:3px solid #00A99D; padding-left:10px">
+                    <img id="imgRotate" class="uk-comment-avatar uk-border-circle" width="40" height="40"
                          src="{{ comment.user_image }}">
                     <h4 class="uk-comment-title">{{ comment.user_name }} {% if comment.user_id==blog.user_id %}(作者){%
                         endif %}</h4>
@@ -77,6 +77,11 @@
                     {{ comment.html_content|safe }}
                 </div>
             </article>
+            <ul>
+            <!--<li>-->
+                <!--<article class="uk-comment">...</article>-->
+            <!--</li>-->
+        </ul>
         </li>
         {% else %}
         <p>还没有人评论...</p>
