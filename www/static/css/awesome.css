@@ -16,13 +16,13 @@ a:hover, a:active {
     margin-bottom: 15px;
 }
 
-#imgRotate{
+.img-rotate{
 	border: #eee solid 2px;
 	border-style:inset;
 	display: block;
 	border-radius: 50%;
 	transition: all 2.0s;
 }
-#imgRotate:hover{
+.img-rotate:hover{
     transform: rotate(360deg);
 }

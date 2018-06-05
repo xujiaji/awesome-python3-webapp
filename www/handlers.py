@@ -9,7 +9,7 @@ from aiohttp import web
 import re, time, hashlib, json, logging, send_email
 from coroweb import get, post
 from apis import Page, APIError, APIValueError, APIResourceNotFoundError, APIPermissionError
-from models import User, Comment, Blog, next_id
+from models import User, Comment, Blog, next_id, Reply
 from config import configs
 import markdown2
 
@@ -110,6 +110,9 @@ async def get_blog(id):
     comments = await Comment.findAll('blog_id=?', [id], orderBy='created_at desc')
     for c in comments:
         c.html_content = markdown2.markdown(c.content)
+        c.replies = await Reply.findAll('comment_id=?', [c.id], orderBy='created_at desc')
+        for reply in c.replies:
+            reply.html_content = markdown2.markdown(reply.content)
     blog.html_content = markdown2.markdown(blog.content)
     return {
         '__template__': 'blog.html',
@@ -222,6 +225,25 @@ def manage_blogs(*, page='1'):
         '__template__': 'manage_blogs.html',
         'page_index': get_page_index(page)
     }
+
+
+@post('/api/comment/reply')
+async def api_create_reply(request, *, id, content):
+    user = request.__user__
+    if user is None:
+        raise APIPermissionError('Please signin first.')
+    if not content or not content.strip():
+        raise APIValueError('content')
+    comment = await Comment.find(id)
+    if comment is None:
+        raise APIResourceNotFoundError('Comment')
+    reply = Reply(comment_id=comment.id,
+                  user_id=comment.user_id,
+                  user_name=comment.user_name,
+                  user_image=comment.user_image,
+                  content=content)
+    await reply.save()
+    return reply
 
 
 @post('/api/blogs/{id}/comments')
