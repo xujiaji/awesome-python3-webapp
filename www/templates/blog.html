@@ -4,6 +4,8 @@
 {% block beforehead%}
 <script>
     var comment_url = '/api/blogs/{{ blog.id }}/comments';
+    var re = '@\S+\s';
+    var replyDict = [];
     $(function() {
         var $form = $('#form-comment');
         $form.submit(function (e) {
@@ -22,26 +24,32 @@
         });
     });
 
-    <!--function reply(reply) {-->
-    <!---->
-    <!--}-->
-        <!--var $reply_form = $('form-comment-child');-->
-        <!--$reply_form.submit(function (e) {-->
-            <!--e.preventDefault();-->
-            <!--$reply_form.showFormError('');-->
-            <!--var content = $reply_form.find('textarea').val().trim();-->
-                        <!--if(content === '') {-->
-                <!--return $reply_form.showFormError('请输入回复内容！');-->
-            <!--}-->
-            <!--&lt;!&ndash;$form.postJSON(comment_url, { content: content }, function(err, result) {&ndash;&gt;-->
-                <!--&lt;!&ndash;if(err){&ndash;&gt;-->
-                    <!--&lt;!&ndash;return $form.showFormError(err);&ndash;&gt;-->
-                <!--&lt;!&ndash;}&ndash;&gt;-->
-                <!--&lt;!&ndash;refresh();&ndash;&gt;-->
-            <!--&lt;!&ndash;});&ndash;&gt;-->
-        <!--});-->
 
+    function replyContent (comment, formId) {
+        var $form = $(formId);
+        $form.showFormError('');
+        var content = $form.find('textarea').val().trim();
+        if(content === '') {
+            return $form.showFormError('请输入评论内容！');
+        }
 
+        $form.postJSON('/api/comment/reply', { id:comment.id, content: content }, function(err, result) {
+            if(err){
+                return $form.showFormError(err);
+            }
+            refresh();
+        });
+    }
+
+    function onClickReply (replyViewId, otherReply) {
+        var $replyTextView = $(replyViewId).find('textarea');
+        if(otherReply == null) {
+            $replyTextView.text('');
+        } else {
+            replyDict[otherReply.user_name] = otherReply.id;
+            $replyTextView.text('@' + otherReply.user_name + ' ');
+        }
+    }
 </script>
 {% endblock %}
 
@@ -94,7 +102,7 @@
                         endif %}</h4>
                     <p class="uk-comment-meta">{{ comment.created_at|datetime }}
                         <button class="uk-button uk-button-mini uk-button-primary"
-                                data-uk-toggle="{target:'#comment-child{{comment.id}}'}"><i class="uk-icon-reply"></i>回复
+                                data-uk-toggle="{target:'#comment-child{{comment.id}}'}" onclick="onClickReply('#form-comment-child{{comment.id}}')"><i class="uk-icon-reply"></i>回复
                         </button>
                     </p>
                 </header>
@@ -114,7 +122,7 @@
                                 endif %}</h4>
                             <p class="uk-comment-meta">{{ reply.created_at|datetime }}
                                 <button class="uk-button uk-button-mini uk-button-link"
-                                        data-uk-toggle="{target:'#comment-child{{comment.id}}'}">回复
+                                        data-uk-toggle="{target:'#comment-child{{comment.id}}'}" onclick="onClickReply('#form-comment-child{{comment.id}}', {;{reply}})">回复
                                 </button>
                             </p>
                         </header>
@@ -126,13 +134,14 @@
                 {% endfor %}
                 <li>
                     <div id="comment-child{{comment.id}}" class="uk-comment-body uk-hidden">
-                        <form id="form-comment-child" class="uk-form">
+                        <form id="form-comment-child{{comment.id}}" class="uk-form" onchange="replyContent({;{comment}}, '#form-comment-child{{comment.id}}';)">
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
                             <fieldset data-uk-margin>
-                                <textarea class="uk-width-1-1" placeholder="@他/她 或 直接评论"
+                                <textarea class="uk-width-1-1"
+                                          placeholder="@他/她 或 直接评论"
                                           style="margin: 0px; width: 383px; height: 48px;"></textarea>
-                                <button type="submit" class="uk-button uk-button-mini uk-button-primary" style="margin-bottom:0">评论
-                                </button>
+                                <div class="uk-button uk-button-mini uk-button-primary" style="margin-bottom:0">评论
+                                </div>
 
                             </fieldset>
                         </form>

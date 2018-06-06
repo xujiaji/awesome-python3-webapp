@@ -7,6 +7,7 @@ create table reply (
     `id` varchar(50) not null,
     `comment_id` varchar(50) not null,
     `user_id` varchar(50) not null,
+    `reply_user_id` varchar(50) not null,
     `user_name` varchar(50) not null,
     `user_image` varchar(500) not null,
     `content` mediumtext not null,

@@ -228,10 +228,10 @@ def manage_blogs(*, page='1'):
 
 
 @post('/api/comment/reply')
-async def api_create_reply(request, *, id, content):
+async def api_create_reply(request, *, id, content, reply_id=None):
     user = request.__user__
     if user is None:
-        raise APIPermissionError('Please signin first.')
+        raise APIPermissionError('请先登录哦！(Please signin first.)')
     if not content or not content.strip():
         raise APIValueError('content')
     comment = await Comment.find(id)
@@ -239,6 +239,7 @@ async def api_create_reply(request, *, id, content):
         raise APIResourceNotFoundError('Comment')
     reply = Reply(comment_id=comment.id,
                   user_id=comment.user_id,
+                  reply_user_id=reply_id,
                   user_name=comment.user_name,
                   user_image=comment.user_image,
                   content=content)
@@ -250,7 +251,7 @@ async def api_create_reply(request, *, id, content):
 async def api_create_comment(id, request, *, content):
     user = request.__user__
     if user is None:
-        raise APIPermissionError('Please signin first.')
+        raise APIPermissionError('请先登录哦！(Please signin first.)')
     if not content or not content.strip():
         raise APIValueError('content')
     blog = await Blog.find(id)
