@@ -8,10 +8,10 @@ Override configurations.
 __author__ = 'Jiaji Xu'
 
 configs = {
-    # 'debug': False,
+    'debug': False,
     'db': {
         'host': '127.0.0.1',
-        # 'password': '6Sb8qzM38'
-        'password': 'password123456'
+        'password': '6Sb8qzM38'
+        # 'password': 'password123456'
     }
 }

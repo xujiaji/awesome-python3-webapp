@@ -10,7 +10,7 @@ import smtplib, markdown2
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
-# import config_privacy
+import config_privacy
 
 
 def _format_address(s):
@@ -19,7 +19,7 @@ def _format_address(s):
 
 
 from_address = 'jiajixu@qq.com'
-# password = config_privacy.email_password # 这里大家配置自己的密码
+password = config_privacy.email_password # 这里大家配置自己的密码
 # to_address = 'demofamilies@gmail.com'
 smtp_server = 'smtp.qq.com'
 

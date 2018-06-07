@@ -228,20 +228,21 @@ def manage_blogs(*, page='1'):
 
 
 @post('/api/comment/reply')
-async def api_create_reply(request, *, id, content, reply_id=None):
+async def api_create_reply(request, *, blog_id, comment_id, content, reply_user_id):
     user = request.__user__
     if user is None:
         raise APIPermissionError('请先登录哦！(Please signin first.)')
     if not content or not content.strip():
         raise APIValueError('content')
-    comment = await Comment.find(id)
-    if comment is None:
-        raise APIResourceNotFoundError('Comment')
-    reply = Reply(comment_id=comment.id,
-                  user_id=comment.user_id,
-                  reply_user_id=reply_id,
-                  user_name=comment.user_name,
-                  user_image=comment.user_image,
+    reply_user = await User.find(reply_user_id)
+    if reply_user is None:
+        raise APIPermissionError('您回复的账号不存在！')
+    send_email.send_comment_email(reply_user.email, content, '/blog/%s' % blog_id)
+    reply = Reply(comment_id=comment_id,
+                  user_id=user.id,
+                  reply_user_id=reply_user_id,
+                  user_name=user.name,
+                  user_image=user.image,
                   content=content)
     await reply.save()
     return reply

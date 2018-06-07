@@ -4,7 +4,7 @@
 {% block beforehead%}
 <script>
     var comment_url = '/api/blogs/{{ blog.id }}/comments';
-    var re = '@\S+\s';
+    var re = '@\\S+\\s';
     var replyDict = [];
     $(function() {
         var $form = $('#form-comment');
@@ -32,8 +32,15 @@
         if(content === '') {
             return $form.showFormError('请输入评论内容！');
         }
-
-        $form.postJSON('/api/comment/reply', { id:comment.id, content: content }, function(err, result) {
+        var toWho = content.match(re);
+        var postData = { blog_id:comment.blog_id, comment_id:comment.id, content: content };
+        if (toWho != null) {
+            postData['reply_user_id'] = replyDict[toWho[0].trim()];
+        } else {
+            postData['reply_user_id'] = comment.user_id;
+        }
+        console.log(postData);
+        $form.postJSON('/api/comment/reply', postData, function(err, result) {
             if(err){
                 return $form.showFormError(err);
             }
@@ -43,11 +50,11 @@
 
     function onClickReply (replyViewId, otherReply) {
         var $replyTextView = $(replyViewId).find('textarea');
-        if(otherReply == null) {
-            $replyTextView.text('');
+        if(!otherReply || typeof(otherReply) === "undefined") {
+            $replyTextView.val('');
         } else {
-            replyDict[otherReply.user_name] = otherReply.id;
-            $replyTextView.text('@' + otherReply.user_name + ' ');
+            replyDict['@' + otherReply.user_name] = otherReply.user_id;
+            $replyTextView.val('@' + otherReply.user_name + ' ');
         }
     }
 </script>
@@ -122,7 +129,7 @@
                                 endif %}</h4>
                             <p class="uk-comment-meta">{{ reply.created_at|datetime }}
                                 <button class="uk-button uk-button-mini uk-button-link"
-                                        data-uk-toggle="{target:'#comment-child{{comment.id}}'}" onclick="onClickReply('#form-comment-child{{comment.id}}', {;{reply}})">回复
+                                        data-uk-toggle="{target:'#comment-child{{comment.id}}'}" onclick="onClickReply('#form-comment-child{{comment.id}}', {{reply}})">回复
                                 </button>
                             </p>
                         </header>
@@ -134,7 +141,7 @@
                 {% endfor %}
                 <li>
                     <div id="comment-child{{comment.id}}" class="uk-comment-body uk-hidden">
-                        <form id="form-comment-child{{comment.id}}" class="uk-form" onchange="replyContent({;{comment}}, '#form-comment-child{{comment.id}}';)">
+                        <form id="form-comment-child{{comment.id}}" class="uk-form" onchange="replyContent({{comment}}, '#form-comment-child{{comment.id}}')">
                             <div class="uk-alert uk-alert-danger uk-hidden"></div>
                             <fieldset data-uk-margin>
                                 <textarea class="uk-width-1-1"
