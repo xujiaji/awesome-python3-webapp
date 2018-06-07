@@ -26,3 +26,13 @@ a:hover, a:active {
 .img-rotate:hover{
     transform: rotate(360deg);
 }
+
+.nav-text {
+    color: #000000;
+    text-shadow: 1px 1px 1px #404040;
+}
+
+.nav-icon {
+    color: #000000;
+    text-shadow: 2px 2px 2px #404040;
+}

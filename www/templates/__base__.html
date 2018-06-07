@@ -17,32 +17,32 @@
     {% block beforehead %}<!-- before head --> {% endblock %}
 </head>
 <body>
-<nav class="uk-navbar uk-navbar-attached uk-margin-bottom">
+<nav class="uk-navbar uk-navbar-attached uk-margin-bottom" style="background: lightsteelblue;">
     <div class="uk0container uk-container-center">
 
         <a href="/" class="uk-navbar-brand"><img class="uk-border-circle" width="120" height="120" src="/static/img/xujiaji.png"></a>
         <ul class="uk-navbar-nav">
             <!--<li data-url="blogs"><a href="/"><i class="uk-icon-home"></i> 主页</a></li>-->
-            <li><a href="/blog/0015279355359080a648f9223784255ba6199a8892e44c0000"><i class="uk-icon-pencil"></i> 留言</a></li>
-            <li><a target="_blank" href="https://weibo.com/jiajixu"><i class="uk-icon-weibo"></i> 微博</a></li>
-            <li><a target="_blank" href="https://github.com/xujiaji"><i class="uk-icon-github"></i> Github</a></li>
-            <li><a target="_blank" href="https://blog.xujiaji.com"><i class="uk-icon-coffee"></i> 博客</a></li>
+            <li><a href="/blog/0015279355359080a648f9223784255ba6199a8892e44c0000" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-pencil nav-icon" style="color: #000000"></i> 留言</a></li>
+            <li><a target="_blank" href="https://weibo.com/jiajixu" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-weibo nav-icon"></i> 微博</a></li>
+            <li><a target="_blank" href="https://github.com/xujiaji" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-github nav-icon" style="color: #000000"></i> Github</a></li>
+            <li><a target="_blank" href="https://blog.xujiaji.com" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-coffee nav-icon" style="color: #000000"></i> 博客</a></li>
         </ul>
 
         <div class="uk-navbar-flip">
             <ul class="uk-navbar-nav">
                 {% if __user__ %}
                 <li class="uk-parent" data-uk-dropdown>
-                    <a href="#0"><i class="uk-icon-user"></i> {{ __user__.name }}</a>
+                    <a href="#0" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-user nav-icon"></i> {{ __user__.name }}</a>
                     <div class="uk-dropdown uk-dropdown-navbar">
                         <ul class="uk-nav uk-nav-navbar">
-                            <li><a href="/signout"><i class="uk-icon-sign-out"></i> 登出</a></li>
+                            <li><a href="/signout" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-sign-out nav-icon"></i> 登出</a></li>
                         </ul>
                     </div>
                 </li>
                 {% else %}
-                <li><a href="/signin"><i class="uk-icon-sign-in"></i> 登录</a></li>
-                <li><a href="/register"><i class="uk-icon-sign-out"></i> 注册</a></li>
+                <li><a href="/signin" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-sign-in nav-icon"></i> 登录</a></li>
+                <li><a href="/register" style="color: #000000; text-shadow: 1px 1px 1px #404040;"><i class="uk-icon-sign-out nav-icon"></i> 注册</a></li>
                 {% endif %}
             </ul>
         </div>
